@@ -1,6 +1,6 @@
 class Block:
     """Minecraft PI block description. Can be sent to Minecraft.setBlock/s"""
-    def __init__(self, id, data=0):
+    def __init__(self, id: int, data: int = 0):
         self.id = id
         self.data = data
 
@@ -21,7 +21,7 @@ class Block:
         return iter((self.id, self.data))
         
     def __repr__(self):
-        return "Block(%d, %d)"%(self.id, self.data)
+        return "Block(%d, %d)" % (self.id, self.data)
 
 AIR                 = Block(0)
 STONE               = Block(1)
