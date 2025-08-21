@@ -1,6 +1,6 @@
 from setuptools import setup
 
-__project__ = 'mcpi'
+__project__ = 'neo_mcpi'
 __desc__ = 'Python library for the Minecraft Pi edition and RaspberryJuice API'
 __version__ = '1.2.1'
 __author__ = "Martin O'Hanlon"
@@ -9,9 +9,9 @@ __license__ = 'MIT'
 __url__ = 'https://github.com/martinohanlon/mcpi'
 __long_description__ = """# Minecraft: Pi edition API Python Library
 
-`mcpi` Python library for communicating with [Minecraft: Pi edition](https://minecraft.net/en-us/edition/pi/) and [RaspberryJuice](https://github.com/zhuowei/RaspberryJuice).
+`neo_mcpi` Python library for communicating with [Minecraft: Pi edition](https://minecraft.net/en-us/edition/pi/) and [RaspberryJuice](https://github.com/zhuowei/RaspberryJuice).
 
-Visit [github.com/martinohanlon/mcpi](https://github.com/martinohanlon/mcpi) for more information.
+Visit [github.com/martinohanlon/neo_mcpi](https://github.com/martinohanlon/mcpi) for more information.
 """
 
 __classifiers__ = [
