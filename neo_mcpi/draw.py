@@ -106,9 +106,9 @@ class MinecraftDrawing:
             # get the edges of the face
         edgesVertices: list = []
         # persist the first vertex
-        firstVertex: int = vertices[0]
+        firstVertex: minecraft.Vec3 = vertices[0]
         # get the last vertex
-        lastVertex: int = vertices[0]
+        lastVertex: minecraft.Vec3 = vertices[0]
 
         # loop through vertices and get edges
         for vertex in vertices[1:]:
@@ -141,11 +141,11 @@ class MinecraftDrawing:
             edgesVertices.sort(key=keyX)
 
             # draw lines between the points on the edges
-            lastVertex = edgesVertices[0]
+            lastVertex: minecraft.Vec3 = edgesVertices[0]
             for vertex in edgesVertices[1:]:
                 # got 2 vertices, draw lines between them
-                self.drawLine(lastVertex.x, lastVertex.y, lastVertex.z, vertex.x, vertex.y, vertex.z, blockType,
-                              blockData)
+                self.drawLineXYZ(lastVertex.x, lastVertex.y, lastVertex.z, vertex.x, vertex.y, vertex.z, blockType,
+                                 blockData)
                 # print "x = " + str(lastVertex.x) + ", y = " + str(lastVertex.y) + ", z = " + str(lastVertex.z) + " x2 = " + str(vertex.x) + ", y2 = " + str(vertex.y) + ", z2 = " + str(vertex.z)
                 # persist the last vertex found
                 lastVertex = vertex
@@ -171,7 +171,7 @@ class MinecraftDrawing:
         for vertex in vertices:
             self.drawPoint3d(vertex.x, vertex.y, vertex.z, blockType, blockData)
 
-    def drawLine(self, x1: int, y1: int, z1: int, x2: int, y2: int, z2: int, blockType: int, blockData: int = 0):
+    def drawLineXYZ(self, x1: int, y1: int, z1: int, x2: int, y2: int, z2: int, blockType: int, blockData: int = 0):
         """
         draws a line between 2 points
 
@@ -201,14 +201,13 @@ class MinecraftDrawing:
         """
         self.drawVertices(self.getLine(x1, y1, z1, x2, y2, z2), blockType, blockData)
 
+    def drawLineList(self, pos1: list[int], pos2: list[int], blockType: int, blockData: int = 0):
+        self.drawLineXYZ(pos1[0], pos1[1], pos1[2], pos2[0], pos2[1], pos2[2], blockType, blockData)
 
-    def drawLineL(self, pos1: list, pos2: list, blockType: int, blockData: int = 0):
-        self.drawVertices(self.getLine(pos1[0], pos1[1], pos1[2], pos2[0], pos2[1], pos2[2]), blockType, blockData)
+    def drawLineVec3(self, pos1: minecraft.Vec3, pos2: minecraft.Vec3, blockType: int, blockData: int = 0):
+        self.drawLineXYZ(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z, blockType, blockData)
 
-    def drawLineV(self, pos1: minecraft.Vec3, pos2: minecraft.Vec3, blockType: int, blockData: int = 0):
-        self.drawVertices(self.getLine(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z), blockType, blockData)
-
-    def drawSphere(self, x1: int, y1: int, z1: int, radius: int, blockType: int, blockData: int = 0):
+    def drawSphereXYZ(self, x1: int, y1: int, z1: int, radius: int, blockType: int, blockData: int = 0):
         """
         draws a sphere around a point to a radius
 
@@ -236,7 +235,13 @@ class MinecraftDrawing:
                     if x ** 2 + y ** 2 + z ** 2 < radius ** 2:
                         self.drawPoint3d(x1 + x, y1 + y, z1 + z, blockType, blockData)
 
-    def drawHollowSphere(self, x1: int, y1: int, z1: int, radius: int, blockType: int, blockData: int = 0):
+    def drawSphereList(self, pos: list[int], radius: int, blockType: int, blockData: int = 0):
+        self.drawSphereXYZ(pos[0], pos[1], pos[2], radius, blockType, blockData)
+
+    def drawSphereVec3(self, pos: minecraft.Vec3, radius: int, blockType: int, blockData: int = 0):
+        self.drawSphereXYZ(pos.x, pos.y, pos.z, radius, blockType, blockData)
+
+    def drawHollowSphereXYZ(self, x1: int, y1: int, z1: int, radius: int, blockType: int, blockData: int = 0):
         """
         draws a hollow sphere around a point to a radius, sphere has to big enough to be hollow!
 
@@ -265,7 +270,13 @@ class MinecraftDrawing:
                             x ** 2 + y ** 2 + z ** 2 > (radius ** 2 - (radius * 2))):
                         self.drawPoint3d(x1 + x, y1 + y, z1 + z, blockType, blockData)
 
-    def drawCircle(self, x0: int, y0: int, z: int, radius: int, blockType: int, blockData: int = 0):
+    def drawHollowSphereList(self, pos: list[int], radius: int, blockType: int, blockData: int = 0):
+        self.drawHollowSphereXYZ(pos[0], pos[1], pos[2], radius, blockType, blockData)
+
+    def drawHollowSphereVec3(self, pos: minecraft.Vec3, radius: int, blockType: int, blockData: int = 0):
+        self.drawHollowSphereXYZ(pos.x, pos.y, pos.z, radius, blockType, blockData)
+
+    def drawCircleXYZ(self, x0: int, y0: int, z0: int, radius: int, blockType: int, blockData: int = 0):
         """
         draws a circle in the Y plane (i.e. vertically)
 
@@ -275,7 +286,7 @@ class MinecraftDrawing:
         :param int y0:
             The y position of the centre of the circle.
 
-        :param int z:
+        :param int z0:
             The z position of the centre of the circle.
 
         :param int radius:
@@ -293,10 +304,10 @@ class MinecraftDrawing:
         ddf_y: int = -2 * radius
         x: int = 0
         y: int = radius
-        self.drawPoint3d(x0, y0 + radius, z, blockType, blockData)
-        self.drawPoint3d(x0, y0 - radius, z, blockType, blockData)
-        self.drawPoint3d(x0 + radius, y0, z, blockType, blockData)
-        self.drawPoint3d(x0 - radius, y0, z, blockType, blockData)
+        self.drawPoint3d(x0, y0 + radius, z0, blockType, blockData)
+        self.drawPoint3d(x0, y0 - radius, z0, blockType, blockData)
+        self.drawPoint3d(x0 + radius, y0, z0, blockType, blockData)
+        self.drawPoint3d(x0 - radius, y0, z0, blockType, blockData)
 
         while x < y:
             if f >= 0:
@@ -306,23 +317,29 @@ class MinecraftDrawing:
             x += 1
             ddf_x += 2
             f += ddf_x
-            self.drawPoint3d(x0 + x, y0 + y, z, blockType, blockData)
-            self.drawPoint3d(x0 - x, y0 + y, z, blockType, blockData)
-            self.drawPoint3d(x0 + x, y0 - y, z, blockType, blockData)
-            self.drawPoint3d(x0 - x, y0 - y, z, blockType, blockData)
-            self.drawPoint3d(x0 + y, y0 + x, z, blockType, blockData)
-            self.drawPoint3d(x0 - y, y0 + x, z, blockType, blockData)
-            self.drawPoint3d(x0 + y, y0 - x, z, blockType, blockData)
-            self.drawPoint3d(x0 - y, y0 - x, z, blockType, blockData)
+            self.drawPoint3d(x0 + x, y0 + y, z0, blockType, blockData)
+            self.drawPoint3d(x0 - x, y0 + y, z0, blockType, blockData)
+            self.drawPoint3d(x0 + x, y0 - y, z0, blockType, blockData)
+            self.drawPoint3d(x0 - x, y0 - y, z0, blockType, blockData)
+            self.drawPoint3d(x0 + y, y0 + x, z0, blockType, blockData)
+            self.drawPoint3d(x0 - y, y0 + x, z0, blockType, blockData)
+            self.drawPoint3d(x0 + y, y0 - x, z0, blockType, blockData)
+            self.drawPoint3d(x0 - y, y0 - x, z0, blockType, blockData)
 
-    def drawHorizontalCircle(self, x0: int, y: int, z0: int, radius: int, blockType: int, blockData: int = 0):
+    def drawCircleList(self, pos: list[int], radius: int, blockType: int, blockData: int = 0):
+        self.drawCircleXYZ(pos[0], pos[1], pos[2], radius, blockType)
+
+    def drawCircleVec3(self, pos: minecraft.Vec3, radius: int, blockType: int, blockData: int = 0):
+        self.drawCircleXYZ(pos.x, pos.y, pos.z, radius, blockType)
+
+    def drawHorizontalCircleXYZ(self, x0: int, y0: int, z0: int, radius: int, blockType: int, blockData: int = 0):
         """
         draws a circle in the X plane (i.e. horizontally)
 
         :param int x0:
             The x position of the centre of the circle.
 
-        :param int y:
+        :param int y0:
             The y position of the centre of the circle.
 
         :param int z0:
@@ -343,10 +360,10 @@ class MinecraftDrawing:
         ddf_z: int = -2 * radius
         x: int = 0
         z: int = radius
-        self.drawPoint3d(x0, y, z0 + radius, blockType, blockData)
-        self.drawPoint3d(x0, y, z0 - radius, blockType, blockData)
-        self.drawPoint3d(x0 + radius, y, z0, blockType, blockData)
-        self.drawPoint3d(x0 - radius, y, z0, blockType, blockData)
+        self.drawPoint3d(x0, y0, z0 + radius, blockType, blockData)
+        self.drawPoint3d(x0, y0, z0 - radius, blockType, blockData)
+        self.drawPoint3d(x0 + radius, y0, z0, blockType, blockData)
+        self.drawPoint3d(x0 - radius, y0, z0, blockType, blockData)
 
         while x < z:
             if f >= 0:
@@ -356,16 +373,22 @@ class MinecraftDrawing:
             x += 1
             ddf_x += 2
             f += ddf_x
-            self.drawPoint3d(x0 + x, y, z0 + z, blockType, blockData)
-            self.drawPoint3d(x0 - x, y, z0 + z, blockType, blockData)
-            self.drawPoint3d(x0 + x, y, z0 - z, blockType, blockData)
-            self.drawPoint3d(x0 - x, y, z0 - z, blockType, blockData)
-            self.drawPoint3d(x0 + z, y, z0 + x, blockType, blockData)
-            self.drawPoint3d(x0 - z, y, z0 + x, blockType, blockData)
-            self.drawPoint3d(x0 + z, y, z0 - x, blockType, blockData)
-            self.drawPoint3d(x0 - z, y, z0 - x, blockType, blockData)
+            self.drawPoint3d(x0 + x, y0, z0 + z, blockType, blockData)
+            self.drawPoint3d(x0 - x, y0, z0 + z, blockType, blockData)
+            self.drawPoint3d(x0 + x, y0, z0 - z, blockType, blockData)
+            self.drawPoint3d(x0 - x, y0, z0 - z, blockType, blockData)
+            self.drawPoint3d(x0 + z, y0, z0 + x, blockType, blockData)
+            self.drawPoint3d(x0 - z, y0, z0 + x, blockType, blockData)
+            self.drawPoint3d(x0 + z, y0, z0 - x, blockType, blockData)
+            self.drawPoint3d(x0 - z, y0, z0 - x, blockType, blockData)
 
-    def getLine(self, x1, y1, z1, x2, y2, z2):
+    def drawHorizontalCircleList(self, pos: list[int], radius: int, blockType: int, blockData: int = 0):
+        self.drawHollowSphereXYZ(pos[0], pos[1], pos[2], radius, blockType, blockData)
+
+    def drawHorizontalCircleVec3(self, pos: minecraft.Vec3, radius: int, blockType: int, blockData: int = 0):
+        self.drawHollowSphereXYZ(pos.x, pos.y, pos.z, radius, blockType)
+
+    def getLine(self, x1: int, y1: int, z1: int, x2: int, y2: int, z2: int) -> list[minecraft.Vec3]:
         """
         Returns all the points which would make up a line between 2 points as a list
 
@@ -391,14 +414,14 @@ class MinecraftDrawing:
         """
 
         # return the maximum of 2 values
-        def MAX(a, b):
+        def MAX(a: int, b: int) -> int:
             if a > b:
                 return a
             else:
                 return b
 
         # return step
-        def ZSGN(a):
+        def ZSGN(a: int) -> int:
             if a < 0:
                 return -1
             elif a > 0:
@@ -407,7 +430,7 @@ class MinecraftDrawing:
                 return 0
 
         # list for vertices
-        vertices = []
+        vertices: list[minecraft.Vec3] = []
 
         # if the 2 points are the same, return single vertice
         if x1 == x2 and y1 == y2 and z1 == z2:
@@ -416,27 +439,27 @@ class MinecraftDrawing:
         # else get all points in edge
         else:
 
-            dx = x2 - x1
-            dy = y2 - y1
-            dz = z2 - z1
+            dx: int = x2 - x1
+            dy: int = y2 - y1
+            dz: int = z2 - z1
 
-            ax = abs(dx) << 1
-            ay = abs(dy) << 1
-            az = abs(dz) << 1
+            ax: int = abs(dx) << 1
+            ay: int = abs(dy) << 1
+            az: int = abs(dz) << 1
 
-            sx = ZSGN(dx)
-            sy = ZSGN(dy)
-            sz = ZSGN(dz)
+            sx: int = ZSGN(dx)
+            sy: int = ZSGN(dy)
+            sz: int = ZSGN(dz)
 
-            x = x1
-            y = y1
-            z = z1
+            x: int = x1
+            y: int = y1
+            z: int = z1
 
             # x dominant
             if ax >= MAX(ay, az):
-                yd = ay - (ax >> 1)
-                zd = az - (ax >> 1)
-                loop = True
+                yd: int = ay - (ax >> 1)
+                zd: int = az - (ax >> 1)
+                loop: bool = True
                 while loop:
                     vertices.append(minecraft.Vec3(x, y, z))
                     if x == x2:
@@ -452,9 +475,9 @@ class MinecraftDrawing:
                     zd += az
             # y dominant
             elif ay >= MAX(ax, az):
-                xd = ax - (ay >> 1)
-                zd = az - (ay >> 1)
-                loop = True
+                xd: int = ax - (ay >> 1)
+                zd: int = az - (ay >> 1)
+                loop: bool = True
                 while loop:
                     vertices.append(minecraft.Vec3(x, y, z))
                     if y == y2:
@@ -470,9 +493,9 @@ class MinecraftDrawing:
                     zd += az
             # z dominant
             elif az >= MAX(ax, ay):
-                xd = ax - (az >> 1)
-                yd = ay - (az >> 1)
-                loop = True
+                xd: int = ax - (az >> 1)
+                yd: int = ay - (az >> 1)
+                loop: bool = True
                 while loop:
                     vertices.append(minecraft.Vec3(x, y, z))
                     if z == z2:
@@ -514,7 +537,7 @@ class MinecraftShape:
         Where the shape should be visible. This defaults to ``True``.
     """
 
-    def __init__(self, mc, position, shapeBlocks=None, visible=True):
+    def __init__(self, mc: minecraft.Minecraft, position, shapeBlocks=None, visible=True):
         # persist the data
         self.mc = mc
         self.position = position
@@ -990,13 +1013,13 @@ class MinecraftTurtle:
         The position where the shape should be created, defaults to ``0,0,0``.
     """
 
-    SPEEDTIMES = {0: 0, 10: 0.1, 9: 0.2, 8: 0.3, 7: 0.4, 6: 0.5, 5: 0.6, 4: 0.7, 3: 0.8, 2: 0.9, 1: 1}
+    SPEEDTIMES: dict[int, int] = {0: 0, 10: 0.1, 9: 0.2, 8: 0.3, 7: 0.4, 6: 0.5, 5: 0.6, 4: 0.7, 3: 0.8, 2: 0.9, 1: 1}
 
-    def __init__(self, mc, position=minecraft.Vec3(0, 0, 0)):
+    def __init__(self, mc: minecraft.Minecraft, position: minecraft.Vec3 = minecraft.Vec3(0, 0, 0)):
         # set defaults
-        self.mc = mc
+        self.mc: minecraft.Minecraft = mc
         # start position
-        self.startposition = position
+        self.startposition: minecraft.Vec3 = position
         # set turtle position
         self.position = position
         # set turtle angles
@@ -1064,8 +1087,8 @@ class MinecraftTurtle:
         if self.turtlespeed == 0 and self.flying:
             # draw the line
             if self._pendown:
-                self.mcDrawing.drawLine(currentX, currentY - 1, currentZ, targetX, targetY - 1, targetZ,
-                                        self._penblock.id, self._penblock.data)
+                self.mcDrawing.drawLineXYZ(currentX, currentY - 1, currentZ, targetX, targetY - 1, targetZ,
+                                           self._penblock.id, self._penblock.data)
         else:
             blocksBetween = self.mcDrawing.getLine(currentX, currentY, currentZ, targetX, targetY, targetZ)
             for blockBetween in blocksBetween:
@@ -1301,8 +1324,8 @@ class MinecraftTurtle:
         z = cz + (radius * (math.cos(math.radians(verticalAngle)) * math.sin(math.radians(horizontalAngle))))
         return x, y, z
 
-    def _roundXYZ(x, y, z):
+    def _roundXYZ(self, x, y, z):
         return int(round(x, 0)), int(round(y, 0)), int(round(z, 0))
 
-    def _roundVec3(position):
-        return minecraft.vec3(int(position.x), int(position.y), int(position.z))
+    def _roundVec3(self, position: minecraft.Vec3) -> minecraft.Vec3:
+        return minecraft.Vec3(int(position.x), int(position.y), int(position.z))

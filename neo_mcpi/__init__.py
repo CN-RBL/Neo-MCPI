@@ -3,4 +3,4 @@ VERSION: str = __version__
 __author__: str = "RBL"
 AUTHOR: str = __author__
 
-__all__ = ["block", "connection", "entity", "event", "minecraft", "util", "vec3"]
+__all__ = ["block", "connection", "entity", "event", "minecraft", "util", "vec3", "draw"]
