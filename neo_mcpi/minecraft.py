@@ -1,3 +1,4 @@
+from neo_mcpi.block import Block
 from .connection import Connection
 from .vec3 import Vec3
 from .event import BlockEvent, ChatEvent, ProjectileEvent
@@ -304,27 +305,27 @@ class Minecraft:
         self.player = CmdPlayer(connection)
         self.events = CmdEvents(connection)
 
-    def getBlock(self, *args):
-        """Get block (x,y,z) => id:int"""
-        return int(self.conn.sendReceive(b"world.getBlock", intFloor(args)))
+    def getBlock(self, x: int, y: int, z: int) -> Block:
+        """Get block (x,y,z) => id:Block"""
+        return Block(int(self.conn.sendReceive(b"world.getBlock", intFloor((x, y, z)))))
 
-    def getBlockWithData(self, *args):
+    def getBlockWithData(self, x: int, y: int, z: int) -> Block:
         """Get block with data (x,y,z) => Block"""
-        ans = self.conn.sendReceive(b"world.getBlockWithData", intFloor(args))
+        ans = self.conn.sendReceive(b"world.getBlockWithData", intFloor((x, y, z)))
         return Block(*list(map(int, ans.split(","))))
 
-    def getBlocks(self, *args):
+    def getBlocks(self, x0: int, y0: int, z0: int, x1: int, y1: int, z1: int) -> map:
         """Get a cuboid of blocks (x0,y0,z0,x1,y1,z1) => [id:int]"""
-        s = self.conn.sendReceive(b"world.getBlocks", intFloor(args))
-        return map(int, s.split(","))
+        s = self.conn.sendReceive(b"world.getBlocks", intFloor(x0, y0, z0, x1, y1, z1))
+        return map(Block, s.split(","))
 
-    def setBlock(self, *args):
+    def setBlock(self, x: int, y: int, z: int, id: int | Block, data: int = 0):
         """Set block (x,y,z,id,[data])"""
-        self.conn.send(b"world.setBlock", intFloor(args))
+        self.conn.send(b"world.setBlock", intFloor((x, y, z, id, data)))
 
-    def setBlocks(self, *args):
+    def setBlocks(self, x0: int, y0: int, z0: int, x1: int, y1: int, z1: int, id: int, data: int = 0):
         """Set a cuboid of blocks (x0,y0,z0,x1,y1,z1,id,[data])"""
-        self.conn.send(b"world.setBlocks", intFloor(args))
+        self.conn.send(b"world.setBlocks", intFloor((x0, y0, z0, x1, y1, z1, id, data)))
 
     def setSign(self, *args):
         """Set a sign (x,y,z,id,data,[line1,line2,line3,line4])
@@ -365,13 +366,13 @@ class Minecraft:
         """Restore the world state to the checkpoint"""
         self.conn.send(b"world.checkpoint.restore")
 
-    def postToChat(self, msg):
+    def postToChat(self, msg: str):
         """Post a message to the game chat"""
         self.conn.send(b"chat.post", msg)
 
     def setting(self, setting, status):
         """Set a world setting (setting, status). keys: world_immutable, nametags_visible"""
-        self.conn.send(b"world.setting", setting, 1 if bool(status) else 0)
+        self.conn.send(b"world.setting", setting, int(bool(status)))
 
     def getEntityTypes(self):
         """Return a list of Entity objects representing all the entity types in Minecraft"""
@@ -386,7 +387,7 @@ class Minecraft:
         return [[int(n.split(",")[0]), int(n.split(",")[1]), n.split(",")[2], float(n.split(",")[3]),
                  float(n.split(",")[4]), float(n.split(",")[5])] for n in entities]
 
-    def removeEntity(self, id) -> int:
+    def removeEntity(self, id: int | Entity) -> int:
         """Remove entity by id (entityId:int) => (removedEntitiesCount:int)"""
         return int(self.conn.sendReceive(b"world.removeEntity", int(id)))
 
